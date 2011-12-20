@@ -84,6 +84,7 @@ function biblereadings_admin_import_text_form_submit($form, &$form_state) {
           $o->startchapter = 1;
           $o->endchapter = $books[$book]->chapters;
           drupal_write_record('biblereadings_readings', $o);
+          $count++;
           //$records[] = $o;
         }
       } else {
@@ -99,12 +100,13 @@ function biblereadings_admin_import_text_form_submit($form, &$form_state) {
           }
         }
         drupal_write_record('biblereadings_readings', $o);
+        $count++;
         //$records[] = $o;
       }
     }
   }
 
-  drupal_set_message("Successfully Imported Bible Readings");
+  drupal_set_message(t("Successfully Imported !count Bible Readings", array('!count' => $count)));
 }
 
 function biblereadings_populate_books() {
@@ -155,7 +157,7 @@ function biblereadings_schedule_page($year = null) {
       ORDER BY r.date";
   $result = db_query($sql, $start, $end);
 
-  $header = array(t('Date'), t('Book'), t('Start'), t('End'));
+  $header = array(t('Date'), t('Book'), t('Start'), t('End'), '');
 
   while($o = db_fetch_object($result)) {
     $rows[] = array(
