@@ -1,8 +1,7 @@
 <?php
 
+module_load_include('inc', 'biblereadings', 'includes/hooks');
 module_load_include('inc', 'biblereadings', 'includes/admin');
 module_load_include('inc', 'biblereadings', 'includes/util');
-module_load_include('inc', 'biblereadings', 'includes/blocks');
 module_load_include('inc', 'biblereadings', 'includes/theme');
 module_load_include('inc', 'biblereadings', 'includes/forms');
-module_load_include('inc', 'biblereadings', 'includes/hooks');

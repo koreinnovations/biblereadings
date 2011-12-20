@@ -1,9 +1,12 @@
 <?php
 
-function biblereadings_perm() {
+function biblereadings_permission() {
   $items = array();
 
-  $items[] = 'administer bible readings';
+  $items['administer bible readings'] = array(
+      'title' => 'administer bible readings',
+      'description' => t('Allows the user to administer bible readings settings'),
+  );
 
   return $items;
 }
@@ -18,32 +21,32 @@ function biblereadings_menu() {
       'page arguments' => array('biblereadings_admin_readings_form'),
   );
 
-  $items['admin/settings/biblereadings'] = array(
+  $items['admin/config/biblereadings'] = array(
       'title' => 'Bible Readings',
       'page callback' => 'drupal_get_form',
       'page arguments' => array('biblereadings_admin_settings_form'),
       'access arguments' => array('administer bible readings'),
   );
 
-  $items['admin/settings/biblereadings/schedule'] = array(
+  $items['admin/config/biblereadings/schedule'] = array(
       'title' => 'Schedule',
       'page callback' => 'biblereadings_schedule_page',
       'access arguments' => array('administer bible readings'),
   );
 
-  $items['admin/settings/biblereadings/%biblereading/edit'] = array(
+  $items['admin/config/biblereadings/%biblereading/edit'] = array(
       'title' => 'Edit Bible Reading',
       'page callback' => 'drupal_get_form',
       'page arguments' => array('biblereadings_edit_form', 3),
       'access arguments' => array('administer bible readings'),
   );
 
-  $items['admin/settings/biblereadings/general'] = array(
+  $items['admin/config/biblereadings/general'] = array(
       'title' => 'General Settings',
       'type' => MENU_DEFAULT_LOCAL_TASK,
   );
 
-  $items['admin/settings/biblereadings/import'] = array(
+  $items['admin/config/biblereadings/import'] = array(
       'title' => 'Import Reading Plan',
       'page callback' => 'drupal_get_form',
       'page arguments' => array('biblereadings_admin_import_text_form'),
@@ -64,22 +67,21 @@ function biblereadings_theme() {
   return $items;
 }
 
-function biblereadings_block($op = 'list', $delta = 0, $edit = array()) {
-  switch ($op) {
-    case 'list':
-      $blocks = array();
-      $blocks[0]['info'] = 'Weekly Bible Readings';
-      return $blocks;
+function biblereadings_block_info() {
+  $blocks = array();
+  $blocks['weekly_readings']['info'] = t('Weekly Bible Readings');
+  return $blocks;
+}
 
-    case('view'):
-      $block = array();
-      switch ($delta) {
-        case 0:
-          $block['content'] = biblereadings_block_this_week();
-          break;
-      }
-      return $block;
+function biblereadings_block_view($delta = '') {
+  $block = array();
+  switch ($delta) {
+    case 'weekly_readings':
+      $readings = biblereadings_readings_this_week();
+      $block['content'] = theme('biblereadings_readings_this_week', array('readings' => $readings, 'show_downloads' => TRUE));
+      break;
   }
+  return $block;
 }
 
 function biblereadings_ctools_plugin_directory($module, $plugin) {

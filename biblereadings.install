@@ -1,13 +1,33 @@
 <?php
+/**
+ * @file
+ * Install, update and uninstall functions for the biblereadings module.
+ *
+ */
 
+
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
 function biblereadings_install() {
-  drupal_install_schema('biblereadings');
+  // TODO The drupal_(un)install_schema functions are called automatically in D7.
+  // drupal_install_schema('biblereadings')
 }
 
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
 function biblereadings_uninstall() {
-  drupal_uninstall_schema('biblereadings');
+  // TODO The drupal_(un)install_schema functions are called automatically in D7.
+  // drupal_uninstall_schema('biblereadings')
 }
 
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
 function biblereadings_schema() {
   $schema['biblereadings_books'] = biblereadings_table_books();
   $schema['biblereadings_readings'] = biblereadings_table_readings();
@@ -16,6 +36,10 @@ function biblereadings_schema() {
   return $schema;
 }
 
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
 function biblereadings_table_books() {
   return array(
       'description' => t('TODO: please describe this table!'),
@@ -52,6 +76,10 @@ function biblereadings_table_books() {
   );
 }
 
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
 function biblereadings_table_readings() {
   return array(
       'description' => t('TODO: please describe this table!'),
@@ -91,6 +119,10 @@ function biblereadings_table_readings() {
   );
 }
 
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
 function biblereadings_table_subscriptions() {
   return array(
       'description' => t('TODO: please describe this table!'),
@@ -120,23 +152,4 @@ function biblereadings_table_subscriptions() {
       ),
       'primary key' => array('id'),
   );
-}
-
-function biblereadings_update_6000() {
-  $items = array();
-
-  $items[] = update_sql('alter table {biblereadings_readings} add year int not null');
-
-  return $items;
-}
-
-function biblereadings_update_6001() {
-  $items = array();
-
-  $items[] = update_sql('alter table {biblereadings_readings} drop column `year`;');
-  $items[] = update_sql('alter table {biblereadings_readings} drop column `month`;');
-  $items[] = update_sql('alter table {biblereadings_readings} drop column `day`;');
-  $items[] = update_sql('alter table {biblereadings_readings} add `date` int not null');
-
-  return $items;
 }

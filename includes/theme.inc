@@ -1,6 +1,14 @@
 <?php
 
-function theme_biblereadings_readings_this_week($readings, $show_downloads = true, $abbreviated = false) {
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
+function theme_biblereadings_readings_this_week(&$vars) {
+  $readings = $vars['readings'];
+  $show_downloads = $vars['show_downloads'];
+  $abbreviated = $vars['abbreviated'];
+
   $path = drupal_get_path('module', 'biblereadings');
   drupal_add_css("$path/css/biblereadings.css");
 
@@ -54,7 +62,7 @@ function theme_biblereadings_readings_this_week($readings, $show_downloads = tru
     $psalms .= sprintf('%s %d', $pr, $i->proverb);
 
     $rows[] = array(
-        'class' => $class,
+        'class' => array($class),
         'data' => array(
             date($dt_format, $i->date),
             $psalms,
@@ -63,7 +71,7 @@ function theme_biblereadings_readings_this_week($readings, $show_downloads = tru
     );
   }
 
-  $output .= theme('table', $head, $rows, array('id' => 'biblereadings-this-week'));
+  $output .= theme('table', array('header' => $head, 'rows' => $rows, 'attributes' => array('id' => 'biblereadings-this-week')));
 
   if ($show_downloads) {
     $links = array();
@@ -77,7 +85,7 @@ function theme_biblereadings_readings_this_week($readings, $show_downloads = tru
       $links[] = l('Chronological Bible reading plan', $chronological, array('attributes' => array('target' => '_blank')));
     }
 
-    $output .= theme('item_list', $links, 'Download a Printable Reading Plan');
+    $output .= theme('item_list', array('items' => $links, 'title' => 'Download a Printable Reading Plan'));
   }
 
   return $output;

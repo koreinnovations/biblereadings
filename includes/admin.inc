@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
 function biblereadings_admin_settings_form(&$form_state) {
   $form = array();
 
@@ -8,18 +12,20 @@ function biblereadings_admin_settings_form(&$form_state) {
       '#title' => t('Standard readings download path'),
       '#default_value' => variable_get('biblereadings_standard_readings_download_path', ''),
   );
-  
+
   $form['biblereadings_chronological_readings_download_path'] = array(
       '#type' => 'textfield',
       '#title' => t('Chronological readings download path'),
       '#default_value' => variable_get('biblereadings_chronological_readings_download_path', ''),
   );
-  
+
   return system_settings_form($form);
 }
 
-
-
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
 function biblereadings_admin_import_text_form(&$form_state) {
   $form = array();
 
@@ -44,6 +50,10 @@ function biblereadings_admin_import_text_form(&$form_state) {
   return $form;
 }
 
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
 function biblereadings_admin_import_text_form_submit($form, &$form_state) {
   $month_re = '/^\w+$/';
   $books = biblereadings_get_books();
@@ -66,7 +76,8 @@ function biblereadings_admin_import_text_form_submit($form, &$form_state) {
     //while($line = trim(fgets($file))) {
     if (preg_match($month_re, $line)) {
       $current_month = $line;
-    } else {
+    }
+    else {
       $matches = explode('#', $line);
 
       list($day, $books_str, $start_chapter, $end_chapter) = array($matches[0], $matches[1], $matches[2], $matches[3]);
@@ -76,7 +87,7 @@ function biblereadings_admin_import_text_form_submit($form, &$form_state) {
 
       if (sizeof($books_arr) > 1) {
         foreach ($books_arr as $book) {
-          $date = mktime(0, 0, 0, $month, $day, (int)$form_state['values']['year']);
+          $date = mktime(0, 0, 0, $month, $day, (int) $form_state['values']['year']);
           $book = trim(strtolower($book));
           $o = new stdClass();
           $o->date = $date;
@@ -86,7 +97,8 @@ function biblereadings_admin_import_text_form_submit($form, &$form_state) {
           drupal_write_record('biblereadings_readings', $o);
           //$records[] = $o;
         }
-      } else {
+      }
+      else {
         $book = trim(strtolower($books_arr[0]));
         $date = mktime(0, 0, 0, $month, $day, $form_state['values']['year']);
         $o = new stdClass();
@@ -107,6 +119,10 @@ function biblereadings_admin_import_text_form_submit($form, &$form_state) {
   drupal_set_message("Successfully Imported Bible Readings");
 }
 
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
 function biblereadings_populate_books() {
   $path = drupal_get_path('module', 'biblereadings');
   $file = fopen("$path/resources/bible_books_pipe.csv", 'r');
@@ -131,16 +147,24 @@ function biblereadings_populate_books() {
   drupal_set_message("Successfully populated Bible Readings database with $count books.");
 }
 
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
 function biblereadings_get_books() {
   $sql = "select * from {biblereadings_books} order by position";
   $result = db_query($sql);
   $books = array();
-  while ($o = db_fetch_object($result)) {
+  foreach ($result as $o) {
     $books[strtolower($o->name)] = $o;
   }
   return $books;
 }
 
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
 function biblereadings_schedule_page($year = null) {
   if (!$year) {
     $year = date('Y');
@@ -148,37 +172,40 @@ function biblereadings_schedule_page($year = null) {
   $start = strtotime('1/1/' . $year);
   $end = strtotime('12/31/' . $year . ' 23:59:59');
 
-  $sql = "SELECT r.*, b.name
+  $result = db_query("SELECT r.*, b.name
       FROM {biblereadings_readings} r
       JOIN {biblereadings_books} b ON b.id = r.startbook
-      WHERE r.date between %d and %d
-      ORDER BY r.date";
-  $result = db_query($sql, $start, $end);
+      WHERE r.date between :start and :end
+      ORDER BY r.date", array(':start' => $start, ':end' => $end));
 
   $header = array(t('Date'), t('Book'), t('Start'), t('End'));
 
-  while($o = db_fetch_object($result)) {
+  foreach ($result as $o) {
     $rows[] = array(
         date('F j, Y', $o->date),
         $o->name,
         $o->startchapter,
         $o->endchapter,
-        l(t('edit'), 'admin/settings/biblereadings/' . $o->id . '/edit'),
+        l(t('edit'), 'admin/config/biblereadings/' . $o->id . '/edit'),
     );
   }
 
-  $output .= theme('table', $header, $rows);
+  $output .= theme('table', array('header' => $header, 'rows' => $rows));
 
   return $output;
 }
 
-function biblereadings_edit_form(&$form_state, $reading) {
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
+function biblereadings_edit_form($form, &$form_state, $reading) {
   $form = array();
 
   $books = array();
   $sql = "select * from {biblereadings_books} order by position";
   $result = db_query($sql);
-  while($o = db_fetch_object($result)) {
+  foreach ($result as $o) {
     $books[$o->id] = $o->name;
   }
 
@@ -219,6 +246,10 @@ function biblereadings_edit_form(&$form_state, $reading) {
   return $form;
 }
 
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
 function biblereadings_edit_form_submit($form, &$form_state) {
   $v = $form_state['values'];
 
@@ -232,5 +263,5 @@ function biblereadings_edit_form_submit($form, &$form_state) {
 
   drupal_write_record('biblereadings_readings', $reading, 'id');
   drupal_set_message('Bible reading entry saved.');
-  $form_state['redirect'] = 'admin/settings/biblereadings/schedule';
+  $form_state['redirect'] = 'admin/config/biblereadings/schedule';
 }
