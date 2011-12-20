@@ -32,6 +32,7 @@ function biblereadings_menu() {
       'title' => 'Schedule',
       'page callback' => 'biblereadings_schedule_page',
       'access arguments' => array('administer bible readings'),
+      'type' => MENU_LOCAL_TASK,
   );
 
   $items['admin/config/biblereadings/%biblereading/edit'] = array(

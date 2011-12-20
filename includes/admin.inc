@@ -95,6 +95,7 @@ function biblereadings_admin_import_text_form_submit($form, &$form_state) {
           $o->startchapter = 1;
           $o->endchapter = $books[$book]->chapters;
           drupal_write_record('biblereadings_readings', $o);
+          $count++;
           //$records[] = $o;
         }
       }
@@ -111,12 +112,13 @@ function biblereadings_admin_import_text_form_submit($form, &$form_state) {
           }
         }
         drupal_write_record('biblereadings_readings', $o);
+        $count++;
         //$records[] = $o;
       }
     }
   }
 
-  drupal_set_message("Successfully Imported Bible Readings");
+  drupal_set_message(t("Successfully Imported !count Bible Readings", array('!count' => $count)));
 }
 
 /**
@@ -174,11 +176,11 @@ function biblereadings_schedule_page($year = null) {
 
   $result = db_query("SELECT r.*, b.name
       FROM {biblereadings_readings} r
-      JOIN {biblereadings_books} b ON b.id = r.startbook
+      LEFT JOIN {biblereadings_books} b ON b.id = r.startbook
       WHERE r.date between :start and :end
       ORDER BY r.date", array(':start' => $start, ':end' => $end));
 
-  $header = array(t('Date'), t('Book'), t('Start'), t('End'));
+  $header = array(t('Date'), t('Book'), t('Start'), t('End'), '');
 
   foreach ($result as $o) {
     $rows[] = array(
@@ -190,6 +192,10 @@ function biblereadings_schedule_page($year = null) {
     );
   }
 
+  $form_state = array('year' => $year);
+  
+  $output .= drupal_render(drupal_build_form('biblereadings_schedule_form', $form_state));
+  $output .= '<hr />';
   $output .= theme('table', array('header' => $header, 'rows' => $rows));
 
   return $output;
