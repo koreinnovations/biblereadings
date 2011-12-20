@@ -1,0 +1,6 @@
+name=Bible Readings
+package=Bible Reading
+core = 6.x
+version = 6.x-1.x-dev
+
+; dependencies[] = bible
