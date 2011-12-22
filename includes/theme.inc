@@ -13,6 +13,8 @@ function theme_biblereadings_readings_this_week(&$vars) {
   drupal_add_css("$path/css/biblereadings.css");
 
   $today = strtotime(date('Y-m-d'));
+  
+  $version = 'NKJV';
 
   $output = '';
 
@@ -32,6 +34,10 @@ function theme_biblereadings_readings_this_week(&$vars) {
     if ($i->startchapter) {
       $regular .= sprintf(' %s-%s', $i->startchapter, $i->endchapter);
     }
+    
+    $url = sprintf('http://www.biblegateway.com/passage/?search=%s&version=%s', urlencode($regular), $version);
+      $regular = l($regular, $url, array('attributes' => array('target' => '_blank')));
+    
     if ($i->psalms[1]) {
       if ($abbreviated) {
         $ps = t('Ps');
@@ -41,6 +47,8 @@ function theme_biblereadings_readings_this_week(&$vars) {
       }
 
       $psalms = sprintf("%s %d-%d", $ps, $i->psalms[0], $i->psalms[1]);
+      $url = sprintf('http://www.biblegateway.com/passage/?search=%s&version=%s', urlencode($psalms), $version);
+      $psalms = l($psalms, $url, array('attributes' => array('target' => '_blank')));
     }
     else {
       if ($abbreviated) {
@@ -51,15 +59,21 @@ function theme_biblereadings_readings_this_week(&$vars) {
       }
 
       $psalms = sprintf("%s %d", $ps, $i->psalms[0]);
+      $url = sprintf('http://www.biblegateway.com/passage/?search=%s&version=%s', urlencode($psalms), $version);
+      $psalms = l($psalms, $url, array('attributes' => array('target' => '_blank')));
     }
-    $psalms .= ' / ';
     if ($abbreviated) {
       $pr = t('Pr');
     }
     else {
       $pr = t('Proverbs');
     }
-    $psalms .= sprintf('%s %d', $pr, $i->proverb);
+    $proverb = sprintf('%s %d', $pr, $i->proverb);
+    $url = sprintf('http://www.biblegateway.com/passage/?search=%s&version=%s', urlencode($proverb), $version);
+    $proverb = l($proverb, $url, array('attributes' => array('target' => '_blank')));
+
+    $psalms .= ' / ';
+    $psalms .= $proverb;
 
     $rows[] = array(
         'class' => array($class),
