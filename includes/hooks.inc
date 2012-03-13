@@ -4,17 +4,12 @@ function biblereadings_cron() {
 
   $now = time();
   $last_sent = variable_get('biblereadings_last_sent', 0);
-
-
   $ready_to_send = ($now - $last_sent >= ONE_DAY);
-  $to = 'connor.davis@koremedia.net';
-
 
   if ($ready_to_send == true) {
 
     // Pull a list of subscribers
-    $list = array();
-    $list[] = array('name' => 'Noah Lively', 'email' => 'noah@koremedia.net', 'preference' => 'html');
+    $list = biblereadings_get_subscribers();   
 
     // Pull today's readings using our API function
     // Loop through list of subscribers and send a message to each
@@ -50,7 +45,6 @@ function biblereadings_email_daily_readings_to_user($date, $user) {
   // with this instead of building an alternate implementation of the mail system.
   // See here for details when ready:
   // http://drupal.org/node/900794
-  
 //  if ($user['preference'] == 'html') {
 //    $mail_key = 'biblereadings_html_mail';
 //  }
@@ -186,6 +180,7 @@ function biblereadings_theme() {
 function biblereadings_block_info() {
   $blocks = array();
   $blocks['weekly_readings']['info'] = t('Weekly Bible Readings');
+  $blocks['subscription']['info'] = t('Bible Readings Subscription Form');
   return $blocks;
 }
 
@@ -195,6 +190,10 @@ function biblereadings_block_view($delta = '') {
     case 'weekly_readings':
       $readings = biblereadings_readings_this_week();
       $block['content'] = theme('biblereadings_readings_this_week', array('readings' => $readings, 'show_downloads' => TRUE));
+      break;
+    case 'subscription':
+      $form = drupal_get_form('biblereadings_subscribe_form');
+      $block['content'] = drupal_render($form);
       break;
   }
   return $block;

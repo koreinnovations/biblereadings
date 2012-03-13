@@ -1,5 +1,22 @@
 <?php
 
+function biblereadings_get_subscribers() {
+  $query = "SELECT * FROM {biblereadings_subscriptions}";
+  $result = db_query($query);
+
+  $items = array();
+
+  foreach ($result as $item) {
+    $items[] = array(
+        'name' => $item->name,
+        'email' => $item->email,
+        'joined' => $item->joined,
+    );
+  }
+  
+  return $items;
+}
+
 function biblereadings_format_regular_reading($reading, $abbreviated = FALSE) {
   if ($abbreviated) {
     $regular = $reading->abbreviation;
@@ -10,7 +27,7 @@ function biblereadings_format_regular_reading($reading, $abbreviated = FALSE) {
   if ($reading->startchapter) {
     $regular .= sprintf(' %s-%s', $reading->startchapter, $reading->endchapter);
   }
-  
+
   return $regular;
 }
 
