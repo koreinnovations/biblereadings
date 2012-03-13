@@ -1,5 +1,13 @@
 <?php
 
+function template_preprocess_biblereadings_daily_email_html(&$vars) {
+  
+}
+
+function template_preprocess_biblereadings_daily_email_text(&$vars) {
+  
+}
+
 /**
  * @todo Please document this function.
  * @see http://drupal.org/node/1354
@@ -23,43 +31,14 @@ function theme_biblereadings_readings_this_week(&$vars) {
 
   foreach ($readings as $i) {
     $class = (date('Y-m-d', $i->date) == date('Y-m-d', $today)) ? 'today' : '';
-    if ($abbreviated) {
-      $regular = $i->abbreviation;
-    }
-    else {
-      $regular = $i->bookname;
-    }
-    if ($i->startchapter) {
-      $regular .= sprintf(' %s-%s', $i->startchapter, $i->endchapter);
-    }
-    if ($i->psalms[1]) {
-      if ($abbreviated) {
-        $ps = t('Ps');
-      }
-      else {
-        $ps = t('Psalms');
-      }
-
-      $psalms = sprintf("%s %d-%d", $ps, $i->psalms[0], $i->psalms[1]);
-    }
-    else {
-      if ($abbreviated) {
-        $ps = t('Ps');
-      }
-      else {
-        $ps = t('Psalm');
-      }
-
-      $psalms = sprintf("%s %d", $ps, $i->psalms[0]);
-    }
+        
+    $regular = biblereadings_format_regular_reading($i, $abbreviated);
+    
+    $psalms = biblereadings_format_psalms($i, $abbreviated);
+    
     $psalms .= ' / ';
-    if ($abbreviated) {
-      $pr = t('Pr');
-    }
-    else {
-      $pr = t('Proverbs');
-    }
-    $psalms .= sprintf('%s %d', $pr, $i->proverb);
+   
+    $psalms .= biblereadings_format_proverb($i, $abbreviated);
 
     $rows[] = array(
         'class' => array($class),

@@ -4,7 +4,7 @@
  * @todo Please document this function.
  * @see http://drupal.org/node/1354
  */
-function biblereadings_admin_settings_form(&$form_state) {
+function biblereadings_admin_settings_form($form, $form_state) {
   $form = array();
 
   $form['biblereadings_standard_readings_download_path'] = array(
@@ -26,7 +26,7 @@ function biblereadings_admin_settings_form(&$form_state) {
  * @todo Please document this function.
  * @see http://drupal.org/node/1354
  */
-function biblereadings_admin_import_text_form(&$form_state) {
+function biblereadings_admin_import_text_form($form, $form_state) {
   $form = array();
 
   $form['year'] = array(
@@ -54,7 +54,7 @@ function biblereadings_admin_import_text_form(&$form_state) {
  * @todo Please document this function.
  * @see http://drupal.org/node/1354
  */
-function biblereadings_admin_import_text_form_submit($form, &$form_state) {
+function biblereadings_admin_import_text_form_submit($form, $form_state) {
   $month_re = '/^\w+$/';
   $books = biblereadings_get_books();
 

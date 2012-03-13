@@ -1,5 +1,7 @@
 <?php
 
+define('ONE_DAY', 60 * 60 * 24);
+
 module_load_include('inc', 'biblereadings', 'includes/hooks');
 module_load_include('inc', 'biblereadings', 'includes/admin');
 module_load_include('inc', 'biblereadings', 'includes/util');
