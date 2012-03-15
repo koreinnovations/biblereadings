@@ -149,7 +149,22 @@ function biblereadings_table_subscriptions() {
               'type' => 'int',
               'not null' => FALSE,
           ),
+          'unsubscribed' => array(
+              'description' => t('TODO: please describe this field!'),
+              'type' => 'int',
+              'not null' => TRUE,
+              'default' => 0,
+          ),
       ),
       'primary key' => array('id'),
   );
+}
+
+/**
+ * Add unsubscribed column
+ */
+function biblereadings_update_7001() {
+  $items = array();
+  $items[] = db_query("ALTER TABLE {biblereadings_subscriptions} ADD COLUMN unsubscribed INT NOT NULL DEFAULT 0");
+  return $items;
 }

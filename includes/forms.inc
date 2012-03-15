@@ -66,10 +66,9 @@ function biblereadings_subscribe_form($form, $form_state) {
 
 function biblereadings_subscribe_form_submit($form, $form_state) {
   
-  $query = "SELECT COUNT(*) FROM {biblereadings_subscriptions} WHERE email = :email";
-  $result = db_query($query, array(':email' => $form_state['values']['email']));
+  $exists = biblereadings_subscription_exists($form_state['values']['email']);
   
-  if ($result->fetchField() == 0) {
+  if (!$exists) {
     $query = "INSERT INTO {biblereadings_subscriptions} (name, email, joined) VALUES (:name, :email, :joined)";
     //db_query($query, $form_state['values']['name'], $form_state['values']['email'], time());
     db_query($query, array(':name' => $form_state['values']['name'], ':email' => $form_state['values']['email'], ':joined' => time()));

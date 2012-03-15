@@ -1,7 +1,10 @@
 <?php
 
-function biblereadings_get_subscribers() {
+function biblereadings_get_subscribers($active_only = TRUE) {
   $query = "SELECT * FROM {biblereadings_subscriptions}";
+  if ($active_only) {
+    $query .= ' WHERE unsubscribed = 0';
+  }
   $result = db_query($query);
 
   $items = array();
@@ -13,11 +16,11 @@ function biblereadings_get_subscribers() {
         'joined' => $item->joined,
     );
   }
-  
+
   return $items;
 }
 
-function biblereadings_format_regular_reading($reading, $abbreviated = FALSE) {
+function biblereadings_format_regular_reading($reading, $abbreviated = FALSE, $link = FALSE, $version = 'NKJV') {
   if ($abbreviated) {
     $regular = $reading->abbreviation;
   }
@@ -28,10 +31,15 @@ function biblereadings_format_regular_reading($reading, $abbreviated = FALSE) {
     $regular .= sprintf(' %s-%s', $reading->startchapter, $reading->endchapter);
   }
 
+  if ($link) {
+    $url = sprintf('http://www.biblegateway.com/passage/?search=%s&version=%s', urlencode($regular), $version);
+    $regular = l($regular, $url, array('attributes' => array('target' => '_blank')));
+  }
+
   return $regular;
 }
 
-function biblereadings_format_proverb($reading, $abbreviated = FALSE) {
+function biblereadings_format_proverb($reading, $abbreviated = FALSE, $link = FALSE, $version = 'NKJV') {
   if ($abbreviated) {
     $pr = t('Pr');
   }
@@ -40,10 +48,15 @@ function biblereadings_format_proverb($reading, $abbreviated = FALSE) {
   }
   $proverb = sprintf('%s %d', $pr, $reading->proverb);
 
+  if ($link) {
+    $url = sprintf('http://www.biblegateway.com/passage/?search=%s&version=%s', urlencode($proverb), $version);
+    $proverb = l($proverb, $url, array('attributes' => array('target' => '_blank')));
+  }
+
   return $proverb;
 }
 
-function biblereadings_format_psalms($reading, $abbreviated = FALSE) {
+function biblereadings_format_psalms($reading, $abbreviated = FALSE, $link = FALSE, $version = 'NKJV') {
   if ($reading->psalms[1]) {
     if ($abbreviated) {
       $ps = t('Ps');
@@ -63,6 +76,11 @@ function biblereadings_format_psalms($reading, $abbreviated = FALSE) {
     }
 
     $psalms = sprintf("%s %d", $ps, $reading->psalms[0]);
+  }
+
+  if ($link) {
+    $url = sprintf('http://www.biblegateway.com/passage/?search=%s&version=%s', urlencode($psalms), $version);
+    $psalms = l($psalms, $url, array('attributes' => array('target' => '_blank')));
   }
 
   return $psalms;
@@ -127,4 +145,16 @@ function biblereadings_get_today_psalms($date) {
 function biblereadings_get_today_proverb($date) {
   $d = date('j', $date);
   return $d;
+}
+
+function biblereadings_subscription_exists($email) {
+  $query = "SELECT COUNT(*) FROM {biblereadings_subscriptions} WHERE email = :email";
+  $result = db_query($query, array(':email' => $email));
+  
+  return ($result->fetchField() > 0);
+}
+
+function biblereadings_unsubscribe($email) {
+  $query = "UPDATE {biblereadings_subscriptions} SET unsubscribed = :unsubscribed WHERE email = :email";
+  db_query($query, array(':email' => $email, ':unsubscribed' => time()));
 }

@@ -25,6 +25,7 @@ function theme_biblereadings_readings_this_week(&$vars) {
   $output = '';
 
   $dt_format = 'l';
+  $version = 'NKJV';
 
   $head = array(t('Day'), t('Devotions'), t('Readings'));
   $rows = array();
@@ -32,13 +33,13 @@ function theme_biblereadings_readings_this_week(&$vars) {
   foreach ($readings as $i) {
     $class = (date('Y-m-d', $i->date) == date('Y-m-d', $today)) ? 'today' : '';
         
-    $regular = biblereadings_format_regular_reading($i, $abbreviated);
+    $regular = biblereadings_format_regular_reading($i, $abbreviated, TRUE, $version);
     
-    $psalms = biblereadings_format_psalms($i, $abbreviated);
+    $psalms = biblereadings_format_psalms($i, $abbreviated, TRUE, $version);
     
     $psalms .= ' / ';
    
-    $psalms .= biblereadings_format_proverb($i, $abbreviated);
+    $psalms .= biblereadings_format_proverb($i, $abbreviated, TRUE, $version);
 
     $rows[] = array(
         'class' => array($class),
@@ -51,6 +52,11 @@ function theme_biblereadings_readings_this_week(&$vars) {
   }
 
   $output .= theme('table', array('header' => $head, 'rows' => $rows, 'attributes' => array('id' => 'biblereadings-this-week')));
+  
+  $output .= '<h3>' . t('Get Daily Readings in Your Inbox!') . '</h3>';
+  $form = drupal_get_form('biblereadings_subscribe_form');
+  $output .= drupal_render($form);
+  
 
   if ($show_downloads) {
     $links = array();

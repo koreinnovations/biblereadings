@@ -102,6 +102,12 @@ function biblereadings_permission() {
 function biblereadings_menu() {
   $items = array();
 
+  $items['biblereadings/unsubscribe'] = array(
+      'title' => 'Unsubscribe from Daily Bible Readings',
+      'page callback' => 'biblereadings_page_unsubscribe',
+      'access callback' => TRUE,
+      'file' => 'includes/pages.inc',
+  );
 
   $items['admin/biblereadings/readings'] = array(
       'title' => 'Bible Readings',
@@ -203,4 +209,15 @@ function biblereadings_ctools_plugin_directory($module, $plugin) {
   if ($module == 'webmobilize' || $module == 'ctools') {
     return 'plugins/' . $plugin;
   }
+}
+
+
+/**
+ * Implementation of hook_views_api().
+ */
+function biblereadings_views_api() {
+  return array(
+      'api' => 2,
+      'path' => drupal_get_path('module', 'biblereadings') . '/includes/views',
+  );
 }
