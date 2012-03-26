@@ -4,7 +4,9 @@ function biblereadings_cron() {
 
   $now = time();
   $last_sent = variable_get('biblereadings_last_sent', 0);
-  $ready_to_send = ($now - $last_sent >= ONE_DAY);
+  $midnight = strtotime(date('m/d/Y'));
+  $cutoff_time = $midnight + (3 * 60 * 60); // 3:00 am today
+  $ready_to_send = ($last_sent < $cutoff_time);
 
   if ($ready_to_send == true) {
 
