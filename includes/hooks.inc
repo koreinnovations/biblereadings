@@ -5,13 +5,21 @@ function biblereadings_cron() {
   $now = time();
   $last_sent = variable_get('biblereadings_last_sent', 0);
   $midnight = strtotime(date('m/d/Y'));
-  $cutoff_time = $midnight + (3 * 60 * 60); // 3:00 am today
-  $ready_to_send = ($last_sent < $cutoff_time);
+  $cutoff_time = $midnight + (3 * ONE_HOUR); // 3:00 am today
+
+  $ready_to_send = TRUE;
+  // Make sure it hasn't been sent today
+  if (date('m/d/Y', $last_sent) == date('m/d/Y')) {
+    $ready_to_send = FALSE;
+  }
+  elseif (time() < $cutoff_time) {
+    $ready_to_send = FALSE;
+  }
 
   if ($ready_to_send == true) {
 
     // Pull a list of subscribers
-    $list = biblereadings_get_subscribers();   
+    $list = biblereadings_get_subscribers();
 
     // Pull today's readings using our API function
     // Loop through list of subscribers and send a message to each
@@ -212,7 +220,6 @@ function biblereadings_ctools_plugin_directory($module, $plugin) {
     return 'plugins/' . $plugin;
   }
 }
-
 
 /**
  * Implementation of hook_views_api().

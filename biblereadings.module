@@ -1,6 +1,8 @@
 <?php
 
-define('ONE_DAY', 60 * 60 * 24);
+
+define('ONE_HOUR', 60 * 60);
+define('ONE_DAY', ONE_HOUR * 24);
 
 module_load_include('inc', 'biblereadings', 'includes/hooks');
 module_load_include('inc', 'biblereadings', 'includes/admin');
