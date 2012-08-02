@@ -38,7 +38,8 @@ function biblereadings_readings_by_date_range_content_type_edit_form($form, $for
   $conf = $form_state['conf'];
 
   $form['range_type'] = array(
-      '#type' => t('Select a Date Range'),
+      '#title' => t('Select a Date Range'),
+      '#type' => 'select',
       '#options' => array(
           'this_week' => t('This Week'),
           'next_week' => t('Next Week'),
