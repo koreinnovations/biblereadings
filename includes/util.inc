@@ -118,6 +118,66 @@ function biblereadings_readings_by_date_range($startdate, $enddate) {
   return $items;
 }
 
+function biblereadings_get_date_range($range_type) {
+  $fullday = 24 * 60 * 60;
+  $day_of_week = date('w');
+  $day_of_month = date('d');
+  $current_year = date('Y');
+  $next_year = $current_year + 1;
+
+  $today = strtotime(date('m/d/Y'));
+  $this_week_sunday = $today - ($day_of_week * $fullday);
+  $first_of_month = $today - (($day_of_month - 1) * $fullday);
+  $first_of_next_month = strtotime(date('m/d/Y', strtotime('first day of next month')));
+  $last_of_next_month = strtotime(date('m/d/Y', strtotime('first day of next month', $first_of_next_month))) - $fullday;
+
+  $first_of_year = strtotime('1/1/' . $current_year);
+  $first_of_next_year = strtotime('1/1/' . $next_year);
+
+  $start = 0;
+  $end = 0;
+
+  switch ($range_type) {
+    case 'this_week':
+      $start = $this_week_sunday;
+      $end = $start + (6 * $fullday);
+      break;
+    case 'next_week':
+      $start = $this_week_sunday + (7 * $fullday);
+      $end = $start + (6 * $fullday);
+      break;
+    case 'this_month':
+      $start = $first_of_month;
+      $end = $first_of_next_month - $fullday;
+      break;
+    case 'next_month':
+      $start = $first_of_next_month;
+      $end = $last_of_next_month;
+      break;
+    case 'next_30_days':
+      $start = $today;
+      $end = $today + (30 * $fullday);
+      break;
+    case 'next_60_days':
+      $start = $today;
+      $end = $today + (60 * $fullday);
+      break;
+    case 'next_90_days':
+      $start = $today;
+      $end = $today + (90 * $fullday);
+      break;
+    case 'this_year':
+      $start = $first_of_year;
+      $end = $first_of_next_year - $fullday;
+      break;
+  }
+
+  return array(
+      'start' => $start,
+      'end' => $end,
+  );
+}
+
 function biblereadings_readings_this_week() {
   $fullday = 24 * 60 * 60;
   $day = date('w');
@@ -150,7 +210,7 @@ function biblereadings_get_today_proverb($date) {
 function biblereadings_subscription_exists($email) {
   $query = "SELECT COUNT(*) FROM {biblereadings_subscriptions} WHERE email = :email";
   $result = db_query($query, array(':email' => $email));
-  
+
   return ($result->fetchField() > 0);
 }
 

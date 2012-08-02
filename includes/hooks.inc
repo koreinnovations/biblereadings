@@ -216,7 +216,7 @@ function biblereadings_block_view($delta = '') {
 }
 
 function biblereadings_ctools_plugin_directory($module, $plugin) {
-  if ($module == 'webmobilize' || $module == 'ctools') {
+  if ($module == 'biblereadings' || $modue == 'webmobilize' || $module == 'ctools') {
     return 'plugins/' . $plugin;
   }
 }
