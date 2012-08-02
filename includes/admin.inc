@@ -22,6 +22,18 @@ function biblereadings_admin_settings_form($form, $form_state) {
   return system_settings_form($form);
 }
 
+function biblereadings_admin_populate_books_form($form, $form_state) {
+  $form = array();
+  
+  return confirm_form($form, t('By clicking "Submit", you will import books of the Bible into your site\'s database.'), 'admin/config/biblereadings');
+}
+
+function biblereadings_admin_populate_books_form_submit($form, $form_state) {
+  biblereadings_populate_books();
+  
+  drupal_goto('admin/config/biblereadings');
+}
+
 /**
  * @todo Please document this function.
  * @see http://drupal.org/node/1354
@@ -119,48 +131,6 @@ function biblereadings_admin_import_text_form_submit($form, $form_state) {
   }
 
   drupal_set_message(t("Successfully Imported !count Bible Readings", array('!count' => $count)));
-}
-
-/**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
- */
-function biblereadings_populate_books() {
-  $path = drupal_get_path('module', 'biblereadings');
-  $file = fopen("$path/resources/bible_books_pipe.csv", 'r');
-
-  $books = array();
-
-  $count = 0;
-  while ($line = trim(fgets($file))) {
-    $split = explode('|', $line);
-    $o = new stdClass();
-    $o->position = $split[0];
-    $o->abbreviation = $split[1];
-    $o->name = $split[2];
-    $o->chapters = $split[3];
-
-    drupal_write_record('biblereadings_books', $o);
-    $count++;
-  }
-
-  fclose($file);
-
-  drupal_set_message("Successfully populated Bible Readings database with $count books.");
-}
-
-/**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
- */
-function biblereadings_get_books() {
-  $sql = "select * from {biblereadings_books} order by position";
-  $result = db_query($sql);
-  $books = array();
-  foreach ($result as $o) {
-    $books[strtolower($o->name)] = $o;
-  }
-  return $books;
 }
 
 /**

@@ -4,10 +4,5 @@ core = 7.x
 
 files[] = biblereadings.install
 files[] = biblereadings.module
-files[] = includes/admin.inc
-files[] = includes/forms.inc
-files[] = includes/hooks.inc
-files[] = includes/theme.inc
-files[] = includes/util.inc
 files[] = mobi.webmobilize/BibleReadingsPage.class.php
 files[] = biblereadings/biblereadings.inc

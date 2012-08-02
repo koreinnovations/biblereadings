@@ -1,5 +1,57 @@
 <?php
 
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
+function biblereadings_populate_books() {
+  $path = drupal_get_path('module', 'biblereadings');
+  $file = fopen("$path/resources/bible_books_pipe.csv", 'r');
+
+  $books = array();
+
+  $count = 0;
+  while ($line = trim(fgets($file))) {
+    $split = explode('|', $line);
+    $o = new stdClass();
+    $o->position = $split[0];
+    $o->abbreviation = $split[1];
+    $o->name = $split[2];
+    $o->chapters = $split[3];
+
+    drupal_write_record('biblereadings_books', $o);
+    $count++;
+  }
+
+  fclose($file);
+
+  drupal_set_message("Successfully populated Bible Readings database with $count books.");
+}
+
+function biblereadings_populate_books_access() {
+  return (biblereadings_books_table_is_empty() && user_access('administer bible readings'));
+}
+
+function biblereadings_books_table_is_empty() {
+  $sql = "select count(*) from {biblereadings_books}";
+  $result = db_query($sql)->fetchField();
+  return ($result == 0);
+}
+
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
+function biblereadings_get_books() {
+  $sql = "select * from {biblereadings_books} order by position";
+  $result = db_query($sql);
+  $books = array();
+  foreach ($result as $o) {
+    $books[strtolower($o->name)] = $o;
+  }
+  return $books;
+}
+
 function biblereadings_get_subscribers($active_only = TRUE) {
   $query = "SELECT * FROM {biblereadings_subscriptions}";
   if ($active_only) {
@@ -217,4 +269,36 @@ function biblereadings_subscription_exists($email) {
 function biblereadings_unsubscribe($email) {
   $query = "UPDATE {biblereadings_subscriptions} SET unsubscribed = :unsubscribed WHERE email = :email";
   db_query($query, array(':email' => $email, ':unsubscribed' => time()));
+}
+
+function biblereadings_email_daily_readings_to_user($date, $user) {
+  static $readings;
+  static $default_params;
+
+  if (!isset($readings)) {
+    $readings = biblereadings_readings_by_date($date);
+  }
+
+  if (!isset($default_params)) {
+    $default_params = array(
+        'subject' => t('Your Bible Readings for !date', array('!date' => date('F j'))),
+        'readings' => $readings,
+    );
+  }
+
+  $params = array();
+  $params['name'] = $user['name'];
+  $params += $default_params;
+
+  // D7 converts html mail to plain text.  In the interest of time, we are going to flow
+  // with this instead of building an alternate implementation of the mail system.
+  // See here for details when ready:
+  // http://drupal.org/node/900794
+//  if ($user['preference'] == 'html') {
+//    $mail_key = 'biblereadings_html_mail';
+//  }
+//  else {
+  $mail_key = 'biblereadings_normal_mail';
+//  }
+  drupal_mail('biblereadings', $mail_key, $user['email'], language_default(), $params);
 }

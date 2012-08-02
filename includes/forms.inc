@@ -1,11 +1,5 @@
 <?php
 
-function biblereadings_admin_readings_form() {
-  $readings = biblereadings_all_readings();
-
-  return $form;
-}
-
 function biblereadings_schedule_form($form, $form_state) {
   $year_options = array();
   for ($i = -1; $i < 4; $i++) {
